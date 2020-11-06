@@ -11,7 +11,8 @@ const GET_ALL_BOOKMARKS = gql`
       url
       desc
     }
-  }`
+  }
+`
 
 export default function Home() {
   const { data, loading, refetch } = useQuery(GET_ALL_BOOKMARKS)
