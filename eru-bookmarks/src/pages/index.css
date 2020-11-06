@@ -1,0 +1,13 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  background: rgb(165, 106, 224);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.bookmark-list {
+  margin-top: 3rem;
+  display: grid;
+  grid-gap: 40px 40px;
+  grid-template-columns: repeat(auto-fit, minmax(400px,1fr))
+}
