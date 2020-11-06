@@ -12,7 +12,7 @@ const Bookmark = ({ bookmark }) => {
         </div>
         <div className="inputs">
           <input disabled name="name" value={bookmark.name} type="text" />
-          <a href="/"><input disabled className="url" name="url" value={bookmark.url} type="text" /></a>
+          <input disabled className="url" name="url" value={bookmark.url} type="text" />
           <textarea disabled name="desc" value={bookmark.desc} type="text" />
         </div>
       </form>

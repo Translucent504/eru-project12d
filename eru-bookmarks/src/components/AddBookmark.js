@@ -2,6 +2,7 @@ import React from "react"
 import "./AddBookmark.css"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
+import { gql, useMutation } from "@apollo/client"
 
 const schema = Yup.object().shape({
   name: Yup.string().required("Required"),
@@ -14,7 +15,18 @@ const schema = Yup.object().shape({
   desc: Yup.string().required("Required"),
 })
 
-const AddBookmark = () => {
+const ADD_BOOKMARK = gql`
+  mutation createBookmark($name: String!, $url: String!, $desc: String!) {
+    createBookmark(name: $name, url: $url, desc: $desc) {
+      name
+      url
+      desc
+    }
+  }
+`
+
+const AddBookmark = ({ refetch }) => {
+  const [createBookmark] = useMutation(ADD_BOOKMARK)
   return (
     <div className="container">
       <h1>New Bookmark</h1>
@@ -25,8 +37,10 @@ const AddBookmark = () => {
           desc: "",
         }}
         validationSchema={schema}
-        onSubmit={values => {
-          console.log(values)
+        onSubmit={async (values, { resetForm }) => {
+          resetForm()
+          const result = await createBookmark({ variables: values })
+          refetch()
         }}
       >
         <Form id="bookmark-form">
