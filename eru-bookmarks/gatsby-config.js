@@ -8,4 +8,3 @@ module.exports = {
   /* Your site config here */
   plugins: [],
 }
-export { wrapRootElement } from "./src/apollo/wrap-root-element"
