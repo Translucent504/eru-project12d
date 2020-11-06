@@ -1,37 +1,47 @@
-const { ApolloServer, gql } = require('apollo-server-lambda')
+const { ApolloServer, gql } = require("apollo-server-lambda")
+const faunadb = require("faunadb")
+const q = faunadb.query
 
 const typeDefs = gql`
   type Query {
-    hello: String
-    allAuthors: [Author!]
-    author(id: Int!): Author
-    authorByName(name: String!): Author
+    allBookmarks: [Bookmark!]
   }
-  type Author {
-    id: ID!
+  type Bookmark {
     name: String!
-    married: Boolean!
+    url: String!
+    desc: String!
+  }
+  type Mutation {
+    createBookmark(name: String!, url: String!, desc: String!): Bookmark
   }
 `
 
-const authors = [
-  { id: 1, name: 'Terry Pratchett', married: false },
-  { id: 2, name: 'Stephen King', married: true },
-  { id: 3, name: 'JK Rowling', married: false },
-]
-
 const resolvers = {
   Query: {
-    hello: () => {
-      return 'Hello, world!'
+    allBookmarks: async () => {
+      const client = new faunadb.Client({
+        secret: process.env.FAUNA_SECRET,
+      })
+      const result = await client.query(
+        q.Map(
+          q.Paginate(q.Documents(q.Collection("bookmarks"))),
+          q.Lambda("bkref", q.Get(q.Var("bkref")))
+        )
+      )
+      return result.data.map(b => b.data)
     },
-    allAuthors: () => {
-      return authors
-    },
-    author: () => {},
-    authorByName: (root, args) => {
-      console.log('hihhihi', args.name)
-      return authors.find((author) => author.name === args.name) || 'NOTFOUND'
+  },
+  Mutation: {
+    createBookmark: async (_, args) => {
+      const client = new faunadb.Client({
+        secret: process.env.FAUNA_SECRET,
+      })
+      await client.query(
+        q.Create(q.Collection("bookmarks"), {
+          data: args,
+        })
+      )
+      return args
     },
   },
 }
